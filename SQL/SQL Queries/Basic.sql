@@ -154,10 +154,11 @@ SELECT order_date,
 FROM   sales.orders;
 
 --Date Analysis
-SELECT order_date,shipped_date,
-datediff(day,order_date,isnull(shipped_date,getdate())) as Day_Diff,
-datediff(month,order_date,shipped_date) as Month_diff,
-dateadd(day,3,order_date) as add_day
+SELECT order_date,
+       shipped_date,
+       datediff(day, order_date, isnull(shipped_date, getdate())) AS Day_Diff,
+       datediff(month, order_date, shipped_date) AS Month_diff,
+       dateadd(day, 3, order_date) AS add_day
 FROM   sales.orders;
 
 --For Temporary Filling 
@@ -167,4 +168,70 @@ SELECT shipped_date,
        IsNull(shipped_date, getdate()),
        COALESCE (shipped_date, getdate())
 FROM   sales.orders;
+
 -------------------------------
+--Analysis
+--SQL CaseCASE means->"If this condition is true, give this result; otherwise check the next condition."
+/*
+  select 
+     case 
+        when condition then value
+        when condition then value
+    end
+from table name; 
+*/
+-- 0-1000 -> Low price Product
+--1001-2500 -> Average price product 
+-->2500 ->High Price product
+SELECT   product_id,
+         product_name,
+         model_year,
+         list_price,
+         CASE WHEN list_price <= 1000 THEN 'Low price Product' WHEN list_price BETWEEN 1000 AND 2500 THEN 'Average Price Product' WHEN list_price > 2500 THEN 'Average Price Product' END AS price_label
+FROM     production.products
+ORDER BY list_price ASC;
+
+--1->Pending , 2-> Processing, 3->Rejected , 4-> Completed 
+/*
+Find order details and show order status label. After labeling filter data showing orders
+which is currently in processing and also show how many exact days required to deliver that order
+*/
+SELECT order_id,
+       order_date,
+       order_status,
+       required_date,
+       shipped_date,
+       datediff(day, order_date, required_date) AS day_as_deliver,
+       CASE WHEN order_status = 1 THEN 'Pending' WHEN order_status = 2 THEN 'Processing' WHEN order_status = 3 THEN 'Rejected' WHEN order_status = 4 THEN 'Completed' END AS Order_status_name
+FROM   sales.orders
+WHERE  order_status = 4;
+
+/*
+-Find order item details and its total price. For each item purchased by customer 13% of vat must be added in total 
+price. After calculating total price show price label as:
+i. 0-3000 ->Low Price Purchase 
+ii.>3000 to 8000 ->Average Price Purchase
+iii. >8000  ->High Price purchase
+select * from sales.order_items;
+*/
+SELECT order_id,
+       product_id,
+       quantity,
+       list_price,
+       discount,
+       (quantity * list_price) AS total_price,
+       (quantity * list_price - (discount * quantity * list_price)) AS price_after_discount,
+       ((quantity * list_price - (discount * quantity * list_price)) + (0.13 * (quantity * list_price - (discount * quantity * list_price)))) AS price_with_VAT,
+       CASE WHEN ((quantity * list_price - (discount * quantity * list_price)) + (0.13 * (quantity * list_price - (discount * quantity * list_price)))) < 3000 THEN 'Low Price Purchase' WHEN ((quantity * list_price - (discount * quantity * list_price)) + (0.13 * (quantity * list_price - (discount * quantity * list_price)))) BETWEEN 3000 AND 8000 THEN ' High Price Purchase' WHEN ((quantity * list_price - (discount * quantity * list_price)) + (0.13 * (quantity * list_price - (discount * quantity * list_price)))) > 8000 THEN 'High Price Purchase' END AS order_label
+FROM   sales.order_items;
+
+--Another Method
+SELECT order_id,
+       product_id,
+       quantity,
+       list_price,
+       discount,
+       (((list_price * quantity) * (1 - discount)) * 1.13) AS total_price,
+       CASE WHEN (((list_price * quantity) * (1 - discount)) * 1.13) < 3000 THEN 'Low Price Purchase' WHEN (((list_price * quantity) * (1 - discount)) * 1.13) BETWEEN 3000 AND 8000 THEN ' High Price Purchase' WHEN (((list_price * quantity) * (1 - discount)) * 1.13) > 8000 THEN 'High Price Purchase' END AS order_label
+FROM   sales.order_items;
+
