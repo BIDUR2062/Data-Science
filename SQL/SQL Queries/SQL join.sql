@@ -73,3 +73,26 @@ SELECT *
 FROM   sales.customers CROSS JOIN sales.orders;
 
 
+--Find customer name and product name they have bought and from which store they ordered that product .
+--only show those orders from 2017 which has been delivered sucessfully
+
+SELECT concat(first_name, ' ', last_name) AS full_name,
+       pp.product_name,
+       year(so.order_date) AS order_year,
+       so.order_status
+FROM   sales.customers AS sc
+       INNER JOIN
+       sales.orders AS so
+       ON sc.customer_id = so.customer_id
+       INNER JOIN
+       sales.stores AS ss
+       ON so.store_id = ss.store_id
+       INNER JOIN
+       production.stocks AS ps
+       ON so.store_id = ps.store_id
+       INNER JOIN
+       production.products AS pp
+       ON pp.product_id = ps.product_id
+WHERE  (year(so.order_date) = 2017
+        AND so.order_status = 4);
+
