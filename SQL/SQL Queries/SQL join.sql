@@ -72,10 +72,8 @@ GROUP BY first_name;
 SELECT *
 FROM   sales.customers CROSS JOIN sales.orders;
 
-
 --Find customer name and product name they have bought and from which store they ordered that product .
 --only show those orders from 2017 which has been delivered sucessfully
-
 SELECT concat(first_name, ' ', last_name) AS full_name,
        pp.product_name,
        year(so.order_date) AS order_year,
@@ -95,4 +93,77 @@ FROM   sales.customers AS sc
        ON pp.product_id = ps.product_id
 WHERE  (year(so.order_date) = 2017
         AND so.order_status = 4);
+
+--Self Join
+--Find Manager Name and staff names
+SELECT concat(s1.first_name, ' ', s1.last_name) AS manager_name,
+       concat(s2.first_name, ' ', s2.last_name) AS staff_name
+FROM   sales.staffs AS s1
+       INNER JOIN
+       sales.staffs AS s2
+       ON s1.staff_id = s2.manager_id;
+
+SELECT   concat(s1.first_name, ' ', s1.last_name) AS manager_name,
+         count(s2.staff_id) AS total_staffs
+FROM     sales.staffs AS s1
+         INNER JOIN
+         sales.staffs AS s2
+         ON s1.staff_id = s2.manager_id
+GROUP BY concat(s1.first_name, ' ', s1.last_name);
+
+SELECT   concat(s1.first_name, ' ', s1.last_name) AS manager_name,
+         count(DISTINCT s2.staff_id) AS total_staffs,
+         count(DISTINCT sc.customer_id) AS total_customers
+FROM     sales.staffs AS s1
+         INNER JOIN
+         sales.staffs AS s2
+         ON s1.staff_id = s2.manager_id
+         INNER JOIN
+         sales.orders AS so
+         ON s1.staff_id = so.staff_id
+         INNER JOIN
+         sales.customers AS sc
+         ON sc.customer_id = so.customer_id
+GROUP BY concat(s1.first_name, ' ', s1.last_name);
+
+--Left Join
+SELECT *
+FROM   sales.customers AS sc
+       LEFT OUTER JOIN
+       sales.orders AS so
+       ON sc.customer_id = so.customer_id;
+
+SELECT *
+FROM   sales.staffs AS s1
+       LEFT OUTER JOIN
+       sales.staffs AS s2
+       ON s1.staff_id = s2.manager_id;
+
+--Right Join
+SELECT *
+FROM   sales.staffs AS s1
+       RIGHT OUTER JOIN
+       sales.staffs AS s2
+       ON s1.staff_id = s2.manager_id;
+
+--Full Outer Join
+SELECT *
+FROM   sales.staffs AS s1
+       FULL OUTER JOIN
+       sales.staffs AS s2
+       ON s1.staff_id = s2.manager_id;
+
+--Natural Join
+SELECT sc.first_name,
+       sc.last_name,
+       sc.state,
+       so.order_status,
+       so.order_date,
+       soi.list_price
+FROM   sales.customers AS sc, sales.orders AS so, sales.order_items AS soi
+WHERE  sc.customer_id = so.customer_id
+       AND so.order_id = soi.order_id
+       AND sc.state = 'TX'
+       AND so.order_status = 2;
+
 
