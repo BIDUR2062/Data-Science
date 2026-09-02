@@ -31,3 +31,67 @@ WHERE  list_price = (SELECT max(list_price) AS second_highest_list_price
                      WHERE  list_price < (SELECT max(list_price)
                                           FROM   production.products));
 
+--Find Customer Details whose orders has been rejected
+SELECT concat(sc.first_name, ' ', sc.last_name),
+       sc.email,
+       sc.street
+FROM   sales.customers AS sc
+       INNER JOIN
+       sales.orders AS so
+       ON sc.customer_id = so.customer_id
+WHERE  order_status = 3;
+
+SELECT concat(first_name, ' ', last_name) AS customer_name,
+       email,
+       street
+FROM   sales.customers
+WHERE  customer_id IN (SELECT customer_id
+                       FROM   sales.orders
+                       WHERE  order_status = 3);
+
+--Find customer details whose order status is completed and who has spent more than 8000 in total.
+SELECT concat(sc.first_name, ' ', sc.last_name),
+       sc.email,
+       sc.street,
+       ((soi.list_price * soi.quantity) * (1 - soi.discount))
+FROM   sales.customers AS sc
+       INNER JOIN
+       sales.orders AS so
+       ON sc.customer_id = so.customer_id
+       INNER JOIN
+       sales.order_items AS soi
+       ON soi.order_id = so.order_id
+WHERE  order_status = 4
+       AND ((soi.list_price * soi.quantity) * (1 - soi.discount)) > 8000;
+
+--Sub Query Method
+SELECT concat(sc.first_name, ' ', sc.last_name) AS Customer_name,
+       sc.email,
+       sc.street,
+       sc.city,
+       sc.state,
+       sc.zip_code
+FROM   sales.customers AS sc
+WHERE  customer_id IN (SELECT so.customer_id
+                       FROM   sales.order_items AS soi
+                              INNER JOIN
+                              sales.orders AS so
+                              ON soi.order_id = so.order_id
+                       WHERE  ((soi.list_price * soi.quantity) * (1 - soi.discount)) > 8000
+                              AND order_status = 4);
+
+SELECT concat(sc.first_name, ' ', sc.last_name) AS Customer_name,
+       sc.email,
+       sc.street,
+       sc.city,
+       sc.state,
+       sc.zip_code
+FROM   sales.customers AS sc
+WHERE  customer_id IN (SELECT top 5 so.customer_id
+                       FROM   sales.order_items AS soi
+                              INNER JOIN
+                              sales.orders AS so
+                              ON soi.order_id = so.order_id
+                       WHERE  ((soi.list_price * soi.quantity) * (1 - soi.discount)) > 8000
+                              AND order_status = 4
+                              order by (soi.list_price * soi.quantity) * (1 - soi.discount) desc);
