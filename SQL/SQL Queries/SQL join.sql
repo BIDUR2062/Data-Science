@@ -110,7 +110,7 @@ FROM     sales.staffs AS s1
          sales.staffs AS s2
          ON s1.staff_id = s2.manager_id
 GROUP BY concat(s1.first_name, ' ', s1.last_name);
-
+---------------------------------------------------
 SELECT   concat(s1.first_name, ' ', s1.last_name) AS manager_name,
          count(DISTINCT s2.staff_id) AS total_staffs,
          count(DISTINCT sc.customer_id) AS total_customers
