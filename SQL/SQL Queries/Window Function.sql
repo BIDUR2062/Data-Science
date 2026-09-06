@@ -82,9 +82,9 @@ FROM   (SELECT product_id,
                category_id,
                model_year,
                list_price,
-               dense_rank() OVER (PARTITION BY brand_id ORDER BY list_price DESC) AS rn
+               dense_rank() OVER ( ORDER BY list_price DESC) AS rn
         FROM   production.products) AS data
-WHERE  rn = 2;
+WHERE  rn = 3;
 
 --NTile
 SELECT Transaction_ID,
