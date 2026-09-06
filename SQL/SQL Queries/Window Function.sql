@@ -133,3 +133,54 @@ SELECT Transaction_ID,
        Fraudulent,
        LAG(Transaction_Type) OVER (ORDER BY transaction_amount)
 FROM   [Fraud Detection Dataset];
+
+
+--Indexing
+select * from sales.stores;
+--index
+--create index idx_name on table (column_name)
+
+create index idx_store_name on sales.stores(store_name);
+
+--Views
+create view customer_rejected_orders as 
+select 
+sc.customer_id,sc.first_name,sc.last_name,sc.phone,sc.email,sc.street,sc.city,sc.state,sc.zip_code from sales.customers sc
+join sales.orders so
+on sc.customer_id = so.customer_id
+where order_status=4;
+
+select * from customer_rejected_orders;
+
+--synonym
+create synonym cro for customer_rejected_orders;
+
+select * from cro;
+
+--Stored Procedure
+create procedure customer_order
+as  
+Begin 
+select 
+sc.customer_id,sc.first_name,sc.last_name,sc.phone,sc.email,sc.street,sc.city,sc.state,sc.zip_code from sales.customers sc
+join sales.orders so
+on sc.customer_id = so.customer_id
+where order_status=4;
+End;
+
+exec customer_order;
+---
+
+create or alter procedure customer_orders(
+@state_name varchar(max)
+) as 
+begin 
+select 
+sc.customer_id,sc.first_name,sc.last_name,sc.phone,sc.email,sc.street,sc.city,sc.state,sc.zip_code from sales.customers sc
+join sales.orders so
+on sc.customer_id = so.customer_id
+where order_status=4 and state=@state_name Or phone= 'NULL' ;
+End;
+
+exec customer_orders 'NY'
+
