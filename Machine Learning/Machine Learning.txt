@@ -1,0 +1,37 @@
+Types of Machine Learning
+--------------------------
+1.Supervised Learning
+    -> It uses labeled data
+    ->Features and Target
+    ->Features can be multiple but target must be one.
+
+Types of Supervised Learning
+----------------------------------
+    A.Regression
+        - If we have to predict or recommend continuous data.
+        Types of Regression:
+    ----------------------------
+    1.
+
+    b.Classification
+        -if we have to predict or recommend discrete / Categorical data.
+
+    Algorithms
+--------------------------
+    1.Linear Regression
+    2.Random Forset Regressor
+    3.XGBoost Regressor
+    4.K Nearest Regressor
+    5.Support Vector Regressor
+    6. Logistic Regression
+
+2.Unsupervised Learning
+    -> It uses unlabeled data
+    -> It only has features
+
+Types :
+
+
+3.Reinforcement Learning
+    -> Self Learning Model
+    -> First we have to train using labeled data
