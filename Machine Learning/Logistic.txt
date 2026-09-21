@@ -1,0 +1,93 @@
+Logistic Regression
+-----------------------
+- Classification Algorithm
+    - Binary Class Classification -> Logistic Regression
+    - Multi Class Classification
+
+Stratify
+-----------
+- We only need to stratify Target Data (Y).
+- To send equal % of data to both training and testing data not to make model biasness.
+- 70% -> Healthy, 30% -> Unhealthy
+
+80/20 split
+
+Training Target Data
+----------------------
+Healthy -> 70% -> 40%
+Unhealthy -> 30% -> 40%
+
+Testing Target Data
+---------------------
+Healthy -> 70% -> 10%
+Unhealthy -> 30% -> 10%
+
+X_train, X_test, Y_train, Y_test = train_test_split(
+    X, Y, test_size=0.2, random_state=42, stratify=Y
+)
+
+Logistic Model
+--------------------
+Arguments for model
+    - solver -> 
+        liblinear -> If our dataset is small sized (0-30000)
+        lbfgs (default) -> If our dataset is medium sized (30k >, below 1 lakhs)
+         saga -> If our dataset is large sized (> 1 lakhs)
+
+    - class_weight :
+    None (default) , 
+     balanced
+
+
+    - random_state -> 42
+
+Metrics
+----------
+- classification report
+    - Precision
+    -Recall
+    -F1-Score -> Average of both precision and recall
+    -Support 
+    -Accuracy -> 80%
+    -Macro Avg -> Macro Average kam aayo vane model le ramro kaam gardaina 
+    -Weighted Avg
+
+
+- confusion matrix
+    - True Postive
+    - True Negative
+    - False Postive 
+    - False Negative
+
+
+True Postive -> If actual data has email as spam then model also predicts email as spam
+False Postive -> If actual data is not spam but model predicts email as spam
+False Negative -> If actual data is spam but model predicts email as not spam
+True Negative -> If actual data is not spam then model also predict email as not spam
+
+In Classification X axis means predicted data and Y axis is original data 
+
+ROC-AUC Curve is only for binary classification
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
