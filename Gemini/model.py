@@ -1,11 +1,11 @@
 import os
 from google import genai
 
-client = genai.Client(api_key = os.getenv('GEMINI_API_KEY'))
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 def gemini(prompt):
-    interaction = client.interactions.create(
-        model = "gemini-3.8-flash",
-        input = prompt
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt
     )
-    return interaction.output_text
+    return response.text
